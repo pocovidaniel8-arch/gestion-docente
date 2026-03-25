@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<title>Importar Docentes → Firestore</title>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyARI3gY8YiOxitAer0ObBmlTROGFMSzAoY",
+    authDomain: "gestion-docente-3545d.firebaseapp.com",
+    projectId: "gestion-docente-3545d",
+    storageBucket: "gestion-docente-3545d.firebasestorage.app",
+    messagingSenderId: "216230805607",
+    appId: "1:216230805607:web:aa3bb6ae1a0c16ee6554c2"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db  = getFirestore(app);
+
+  const DOCENTES = [
+    { docente: "ACERENZA, Soledad",       materia: "DS (Lengua y Literatura)",    curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "ALDROVANDI, Graciela",    materia: "DS (Filosofía)",              curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "ALMARAZ, Debora",         materia: "DS (Ed. Artistica)",          curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "BELTRAME, Carina",        materia: "DS (Inglés)",                 curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "BUSO, Patricia",          materia: "DS (Arte y Diseño)",          curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "CAMPOS, Mariel",          materia: "DS (Matemática)",             curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "CASTRO, Natalia",         materia: "DS (Ed. Física)",             curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "CONSTANTE, Daniel",       materia: "DS (Ed. Física)",             curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "DA SILVA, Sol",           materia: "P4 (Inglés)",                 curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "ESTEVEZ, Adriana",        materia: "DS (Economía)",               curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "FARIÑAS, Julieta",        materia: "DS (C. Ciud-Hist-Geo)",       curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "FELD, Mariano",           materia: "DS (Matemática.)",            curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "FLORINDO, Estefania",     materia: "DS (Inglés)",                 curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "GALVEZ, Stella",          materia: "DS (Lengua y Literatura)",    curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "GARROTE, Valeria",        materia: "DS (Historia -CS. Soc)",      curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "GONTEK, Sofia",           materia: "DS (Lengua y Literatura)",    curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "GUTIERREZ, Debora",       materia: "DS (Proy. Org.)",             curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "GUTIERREZ, Yesica",       materia: "DS (Matemática.)",            curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "HEINZE AYLAN, Sol",       materia: "DS (Historia -CS. Soc)",      curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "HERRERA, Victoria",       materia: "P4 (Bio-Cs.Nat)",             curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "LEMA, Lucia",             materia: "P4 (Int. Física/Quim)",       curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "LODI, Griselda",          materia: "DS (Gestión Org.)",           curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "LOZADA, Daniela",         materia: "DS (Geografía)",              curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "MANGIAROTTI, Cristian",   materia: "DS (Lengua y Literatura)",    curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "MANSILLA, Melina",        materia: "DS (Tall.C.C.)",              curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "MANUELI, Jimena",         materia: "DS (Ed. Física)",             curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "OBREGON, Nicolas",        materia: "DS (Constr. de Ciud.)",       curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "PALMAZ, Pamela",          materia: "DS (Ed. Artistica)",          curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "PAZ ROLON, Milagros",     materia: "DS (Biología)",               curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "PIZARRO, David",          materia: "DS (Constr. de Ciud.)",       curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "PUERTA, Guillermo",       materia: "DS (Ed. Física)",             curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "RAMIREZ, Gabriela",       materia: "DS (Com.-CEC- Int a la Com)", curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "REYNOSO, Romina",         materia: "DS (Ed. Física)",             curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "RODRIGUEZ, Nadia",        materia: "DS (FyQ)",                    curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "SCARANO, Valeria",        materia: "DS (Psicología y Salud y Adol.)", curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "SCATTONE, Victoria",      materia: "P4 (Matemática.)",            curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "SCHMECK, Febe",           materia: "DS (Historia)",               curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "SUAREZ CARRILLO, Matias", materia: "DS (Filosofía)",              curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "TOMMASI, Daniela",        materia: "DS (Matemática.)",            curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "VARGAS, Matias",          materia: "DS (Ed. Física)",             curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "VECCHIARELLI, Damian",    materia: "DS (Econ.T.Org.)",            curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "VELOSO, Nicolas",         materia: "P4 (Fisicoquimica)",          curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "VILLALBA, Ramon",         materia: "DS (Ed. Física)",             curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "ACOSTA, Vanesa",          materia: "",                            curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "MONTES, Maria Ines",      materia: "",                            curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "CASCO, Walter",           materia: "",                            curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+    { docente: "GOMEZ, Alan",             materia: "",                            curso: "", dni: "", registros: {}, tardanzas: [], ausencias: [] },
+  ];
+
+  const COLECCION = "gestion_2026";
+
+  window.importar = async function() {
+    const btn = document.getElementById("btn");
+    const log = document.getElementById("log");
+    btn.disabled = true;
+    btn.textContent = "Importando...";
+    log.innerHTML = "";
+
+    let ok = 0, err = 0;
+    for (const d of DOCENTES) {
+      try {
+        await setDoc(doc(db, COLECCION, d.docente), d, { merge: true });
+        log.innerHTML += `<p style="color:green">✅ ${d.docente}</p>`;
+        ok++;
+      } catch(e) {
+        log.innerHTML += `<p style="color:red">❌ ${d.docente} — ${e.message}</p>`;
+        err++;
+      }
+    }
+
+    btn.textContent = "Importar docentes";
+    btn.disabled = false;
+    log.innerHTML += `<hr><p><strong>Listo: ${ok} importados, ${err} errores.</strong></p>`;
+  }
+</script>
+<style>
+  body { font-family: sans-serif; max-width: 600px; margin: 60px auto; padding: 20px; }
+  h2 { margin-bottom: 10px; }
+  p.info { color: #555; margin-bottom: 24px; font-size: 14px; }
+  button { background: #1e4d6b; color: white; border: none; padding: 14px 28px; font-size: 16px; border-radius: 8px; cursor: pointer; }
+  button:disabled { opacity: 0.5; cursor: not-allowed; }
+  #log { margin-top: 24px; font-size: 13px; max-height: 400px; overflow-y: auto; }
+  #log p { margin: 4px 0; }
+</style>
+</head>
+<body>
+  <h2>📋 Importar Docentes a Firestore</h2>
+  <p class="info">Esto va a cargar los <strong>47 docentes</strong> en la colección <code>gestion_2026</code> de tu proyecto Firebase. Hacé clic una sola vez y esperá.</p>
+  <button id="btn" onclick="importar()">Importar docentes</button>
+  <div id="log"></div>
+</body>
+</html>
